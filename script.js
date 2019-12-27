@@ -10,6 +10,21 @@ var playerCards= [];
 var dealerCards = [];
 var dealerTotal = 0;
 var dealerStatus = "";
+var dealerTotalText = "";
+var playerScore = 0;
+var dealerScore = 0;
+var winStatus = "";
+
+var clearVariables = function () {
+	player1Total = 0;
+	player1Status = "";
+	dealerTotal = 0;
+	dealerStatus = "";
+	dealerTotalText = "";
+	playerScore = 0;
+	dealerScore = 0;
+	winStatus = "";
+} 
 
 //Define binary button availability
 var dealButtonB = true;
@@ -60,12 +75,22 @@ var clearCards = function() {
     }
 };
 
-var dealerFlip = function() {
-	dealerTotal=0;
-	for (i=0; i<2; i++) {
-		dealerTotal=dealerTotal+cardsObj[dealerCards[i]]['cardSum'];
-	}
-	while (dealerTotal<18) {
+var updateDealerStatus = function() {
+	dealerTotalText="Dealer total is " + dealerTotal + ". ";
+	if (dealerTotal<22) {dealerScore = dealerTotal; console.log("updated Dealer status");}
+		else if (dealerTotal==21 && dealerCards.length==2) {dealerStatus = "Dealer hit blackjack! "; dealerScore=100; console.log("updated Dealer status");}
+		else if (dealerTotal >22) {dealerStatus = "Dealer bust! "; dealerScore = 0; console.log("updated Dealer status");};
+};
+
+var updateWinStatus = function() {
+		console.log("Update Win Status function ran - Player score: " +playerScore + ". Dealer score: " + dealerScore);
+		if (playerScore<dealerScore) {winStatus = "Dealer wins!"; console.log("updated win status: " + winStatus);}
+		else if (playerScore=dealerScore) {winStatus = "Tie!"; console.log("updated win status: " + winStatus);}
+		else {winStatus = "Player wins!"; console.log("updated win status: " + winStatus);}
+};
+
+var dealerHit = function() {
+	while (dealerTotal<playerScore && playerScore<22) {
 		dealerCards.push(Math.floor(Math.random()*numberOfCards));
 		var newCardIndex = dealerCards.length-1;
 		var dealercardDisplay = document.createElement('div'); // creating div
@@ -73,26 +98,35 @@ var dealerFlip = function() {
 		dealerArea.appendChild(dealercardDisplay);
 		dealerTotal=dealerTotal+cardsObj[dealerCards[newCardIndex]]['cardSum'];
 	}
-	for (i=0; i<dealerCards.length; i++) {
-	var dealerCardShow=document.querySelectorAll(".dealerCard");
-	dealerCardShow[i].style.backgroundImage="none";
-	dealerCardShow[i].innerHTML = cardsObj[dealerCards[i]]["cardNumber"] + " " +cardsObj[dealerCards[i]]["cardSuit"];
+};
+
+var dealerFlip = function() {
+	for (i=0; i<2; i++) {
+		dealerTotal=dealerTotal+cardsObj[dealerCards[i]]['cardSum'];
 	}
+	dealerHit();
+	for (i=0; i<dealerCards.length; i++) {
+		var dealerCardShow=document.querySelectorAll(".dealerCard");
+		dealerCardShow[i].style.backgroundImage="none";
+		dealerCardShow[i].innerHTML = cardsObj[dealerCards[i]]["cardNumber"] + " " +cardsObj[dealerCards[i]]["cardSuit"];
+	}
+	updateDealerStatus();
+	updateWinStatus();
+	infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status + dealerTotalText + dealerStatus + winStatus;
 };
 
 var totalCheck = function () {
-	if (player1Total<16) {player1Status = "You need to Hit till above 15"; 	dealButtonB = false; hitButtonB = true; standButtonB = false;}
-	else if (player1Total<21) {player1Status = ""; dealButtonB = false; hitButtonB = true; standButtonB = true;}
-	else if (player1Total==21 && playerCards.length==2) {player1Status = "Blackjack!"; dealButtonB = true; hitButtonB = false; standButtonB = false; dealerFlip();}
-	else if (player1Total==21) {player1Status = ""; dealButtonB = true; hitButtonB = false; standButtonB = false; dealerFlip();}
-	else if (player1Total >21) {player1Status = "Bust!"; dealButtonB = true; hitButtonB = false; standButtonB = false; dealerFlip();}
+	if (player1Total<16) {player1Status = "You need to Hit till above 15"; 	dealButtonB = false; hitButtonB = true; standButtonB = false; infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status;}
+	else if (player1Total==21 && playerCards.length==2) {player1Status = "You hit blackjack! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 100; dealerFlip();}
+	else if (player1Total<22) {player1Status = ""; dealButtonB = false; hitButtonB = true; standButtonB = true; playerScore = player1Total; infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status;}
+	else if (player1Total >21) {player1Status = "You bust! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 0; dealerFlip();}
 };
 
 var deal = function () {
+	clearVariables();
 	playerCards=[Math.floor(Math.random()*numberOfCards),Math.floor(Math.random()*numberOfCards)];
 	dealerCards=[Math.floor(Math.random()*numberOfCards),Math.floor(Math.random()*numberOfCards)];
 	clearCards(); //clearing player & dealer area
-    player1Total = 0; //setting player1Total to be 0 
 	for (i=0; i<2; i++) { // cycling through playerCards
 		var cardDisplay = document.createElement('div'); // creating div
 		cardDisplay.className = "playingCard";
@@ -117,11 +151,12 @@ var hit = function () {
 	playerArea.appendChild(cardDisplay);
 	player1Total=player1Total+cardsObj[playerCards[newCardIndex]]['cardSum'];
 	totalCheck();
-	infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status;
 	checkButtons();
+
 }
 
 var stand = function () {
+	totalCheck();
 	dealButtonB = true;
 	hitButtonB = false;
 	standButtonB = false;
@@ -133,10 +168,3 @@ var stand = function () {
 hitButton.addEventListener("click",hit);
 dealButton.addEventListener("click",deal);
 standButton.addEventListener("click",stand);
-
-
-
-
-
-var dealerCheck = function () {};
-
