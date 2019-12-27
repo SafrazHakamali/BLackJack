@@ -1,0 +1,75 @@
+body {
+	background-color: black;
+}
+
+
+p {
+	height: 50px; 
+	display: block;
+	color: grey;
+	font-size: 30px;
+	margin: 10px;
+	padding: 10px;
+}
+
+.iSuit {
+	color: grey;
+	font-size: 50px;
+}
+
+
+#playerArea {
+	line-height: 100px;
+}
+.playingCard{
+	border-style: solid;
+	border-color: grey;
+	border-width: 2px;
+	display: inline-block;
+	height: 178px;
+	margin: 20px;
+	width: 127px;
+	text-align: center;
+	font-size: 60px;
+	line-height: 80px;
+	color: grey;
+	vertical-align: middle;
+	border-radius: 10px;
+}
+
+.dealerCard{
+	border-style: solid;
+	border-color: grey;
+	border-width: 2px;
+	display: inline-block;
+	height: 178px;
+	margin: 20px;
+	width: 127px;
+	text-align: center;
+	font-size: 60px;
+	line-height: 80px;
+	color: grey;
+	vertical-align: middle;
+	border-radius: 10px;
+	background-image: url('greybackground.png');
+}
+
+button {
+	background-color: black;
+	color: grey;
+	font-size: 30px;
+	margin: 10px;
+	padding: 10px;
+	border-color: grey;
+	border-radius: 10px;
+	width: 150px;
+	display: inline-block;
+}
+
+#player1Total {
+	color: grey;
+	font-size: 30px;
+	margin: 10px;
+	padding: 10px;
+	display: inline-block;
+}
