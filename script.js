@@ -1,10 +1,13 @@
 //*Define global variables 
+var cardsObjG = [];
 var cardsObj = [];
 var numberOfCards=52;
 var cardSum=1;
 var cardNumber = "A";
 var cardSuit = "&spades";
 var player1Total = 0;
+var player1AltTotal = 0;
+var player1AltTotalText = "";
 var player1Status = "";
 var playerCards= [];
 var dealerCards = [];
@@ -16,9 +19,13 @@ var dealerScore = 0;
 var winStatus = "";
 var stash = 1000;
 var bet = 0;
+var numbers = [];
 
 //function to reset variables when dealing
 var clearVariables = function () {
+	player1AltTotal = 0;
+	player1AltTotalText = "";
+	player1Status = "";
 	player1Total = 0;
 	player1Status = "";
 	dealerTotal = 0;
@@ -27,6 +34,10 @@ var clearVariables = function () {
 	playerScore = 0;
 	dealerScore = 0;
 	winStatus = "";
+	dealerCards=[];
+	playerCards=[];
+	numbers=[];
+	for (i=0;i<52;i++) {numbers.push(i);}
 } 
 
 //Define binary button availability
@@ -59,7 +70,7 @@ var dealerArea = document.querySelector('#dealerArea');
 var displayStash = function () {stashInfo.innerHTML="You have $"+ stash;};
 displayStash();
 
-//*****Deck Creation***//
+//*****Generic Deck Creation***//
 for (i=0; i<numberOfCards; i++) {
 	if      (i%13 == 0) {cardSum = 11; cardNumber = "A";} 
 	else if (i%13 < 10) {cardSum = i%13+1; cardNumber = i%13+1;} 
@@ -101,9 +112,10 @@ var updateWinStatus = function() {
 };
 
 var dealerHit = function() {
-	while (dealerTotal<playerScore && playerScore<22) {
-		dealerCards.push(Math.floor(Math.random()*numberOfCards));
+	while (dealerTotal<playerScore && playerScore<22 || dealerTotal<12) {
+		dealerCards.push(numbers[Math.floor(Math.random()*numbers.length)]);
 		var newCardIndex = dealerCards.length-1;
+		numbers.splice(numbers.indexOf(dealerCards[newCardIndex]),1);
 		var dealercardDisplay = document.createElement('div'); // creating div
 		dealercardDisplay.className = "dealerCard";
 		dealerArea.appendChild(dealercardDisplay);
@@ -127,12 +139,24 @@ var dealerFlip = function() {
 	infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status + dealerTotalText + dealerStatus + winStatus;
 };
 
+var playerAceCheck =function() {
+	for (i=0; i<playerCards.length;i++) {
+		if (playerCards[i]%13 == 0) {
+			player1AltTotal=player1Total-10;
+			player1AltTotalText = " or "+player1AltTotal;	
+		}
+	}
+}
+
 var totalCheck = function () {
-	if (player1Total<16) {player1Status = "You need to Hit till above 15."; 	dealButtonB = false; hitButtonB = true; standButtonB = false; infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status;}
+	if (player1Total<16) {player1Status = "You need to Hit till above 15."; 	dealButtonB = false; hitButtonB = true; standButtonB = false; infoArea.innerHTML="Your Total is " + player1Total +player1AltTotalText +". "+ player1Status;}
 	else if (player1Total==21 && playerCards.length==2) {player1Status = "You hit BlackJack! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 100; dealerFlip();}
-	else if (player1Total<21 && playerCards.length==5) {player1Status = "You got 5 cards under 21! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 99; dealerFlip();}
-	else if (player1Total<22) {player1Status = ""; dealButtonB = false; hitButtonB = true; standButtonB = true; playerScore = player1Total; infoArea.innerHTML="Your Total is " + player1Total +". "+ player1Status;}
-	else if (player1Total >21) {player1Status = "You have gone bust! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 0; dealerFlip();}
+	else if (player1Total<22 && playerCards.length==5) {player1Status = "You got 5 cards under 21! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 99; dealerFlip();}
+	else if (player1AltTotal>0 && player1AltTotal<22 && playerCards.length==5) {player1Total=player1AltTotal; player1Status = "You got 5 cards under 21! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 99; dealerFlip();}
+	else if (player1Total<22) {player1Status = ""; dealButtonB = false; hitButtonB = true; standButtonB = true; playerScore = player1Total; infoArea.innerHTML="Your Total is " + player1Total +player1AltTotalText +". "+ player1Status;}
+	else if (player1AltTotal>0 && player1AltTotal<22) {player1Status = ""; dealButtonB = false; hitButtonB = true; standButtonB = true; playerScore = player1AltTotal; infoArea.innerHTML="Your Total is " + player1AltTotal +". "+ player1Status;}
+	else if (player1Total >21 && player1AltTotal==0) {player1Status = "You have gone bust! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 0; dealerFlip();}
+	else if (player1AltTotal>21) {player1Total=player1AltTotal; player1Status = "You have gone bust! "; dealButtonB = true; hitButtonB = false; standButtonB = false; playerScore = 0; dealerFlip();}
 };
 
 var cardSpacing = function(doms,pc) {
@@ -149,10 +173,14 @@ var cardSpacing = function(doms,pc) {
 
 var deal = function () {
 	clearVariables();
-	playerCards=[Math.floor(Math.random()*numberOfCards),Math.floor(Math.random()*numberOfCards)];
-	dealerCards=[Math.floor(Math.random()*numberOfCards),Math.floor(Math.random()*numberOfCards)];
-	clearCards(); //clearing player & dealer area
-	for (i=0; i<2; i++) { // cycling through playerCards
+	clearCards();
+	for (i=0; i<2;i++) {
+		//get a random number out of 52 and remove that number from a list of 52 
+		playerCards.push(numbers[Math.floor(Math.random()*numbers.length)]);
+		numbers.splice(numbers.indexOf(playerCards[i]),1);
+		dealerCards.push(numbers[Math.floor(Math.random()*numbers.length)]);
+		numbers.splice(numbers.indexOf(dealerCards[i]),1);
+		// cycling through playerCards
 		var cardDisplay = document.createElement('div'); // creating div
 		cardDisplay.className = "playingCard";
 		cardSpacing(cardDisplay,playerCards[i]);
@@ -162,19 +190,22 @@ var deal = function () {
 		dealercardDisplay.className = "dealerCard";
 		dealerArea.appendChild(dealercardDisplay);
 	}
+	playerAceCheck();
 	totalCheck(); // optains player1Status & update buttonStatus
 	checkButtons(); // update button visibility
 }
 
 var hit = function () {
-	playerCards.push(Math.floor(Math.random()*numberOfCards));
+	playerCards.push(numbers[Math.floor(Math.random()*numbers.length)]);
 	var newCardIndex = playerCards.length-1;
+	numbers.splice(numbers.indexOf(playerCards[newCardIndex]),1);
 	var cardDisplay = document.createElement('div'); // creating div
 	cardDisplay.className = "playingCard";
 	cardSpacing(cardDisplay,playerCards[newCardIndex]);
 	playerArea.appendChild(cardDisplay);
 	console.log(player1Total+" + "+cardsObj[playerCards[newCardIndex]]['cardSum']);
 	player1Total=player1Total+cardsObj[playerCards[newCardIndex]]['cardSum'];
+	playerAceCheck();
 	totalCheck();
 	checkButtons();
 
@@ -185,6 +216,9 @@ var stand = function () {
 	dealButtonB = true;
 	hitButtonB = false;
 	standButtonB = false;
+	if (player1AltTotal>0 && player1Total>21) {
+		player1Total=player1AltTotal;
+	}
 	checkButtons();
 	dealerFlip();
 }
