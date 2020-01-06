@@ -1,22 +1,10 @@
-p {
-	height: 50px; 
-	display: block;
-	font-size: 30px;
-	margin: 10px;
-	padding: 10px;
+.row {
+	margin: 0px;
 }
 
 #stashInfo {
 	text-align: right;
-	
-}
-.iSuit {
-	font-size: 50px;
-}
-
-
-#playerArea {
-	line-height: 100px;
+	font-size: 30px;
 }
 
 .playingCard{
@@ -24,11 +12,12 @@ p {
 	border-color: grey;
 	border-width: 2px;
 	display: inline-block;
-	height: 170px;
-	width: 120px;
+	height: 180px;
+	width: 140px;
+	font-size: 55px;
 	margin: 1%;
-	text-align: center;
-	font-size: 60px;
+	padding: 4px;
+	text-align: left;
 	vertical-align: middle;
 	border-radius: 10px;
 }
@@ -38,29 +27,33 @@ p {
 	border-color: grey;
 	border-width: 2px;
 	display: inline-block;
-	height: 170px;
-	width: 120px;
+	height: 180px;
+	width: 140px;
+	font-size: 55px;
 	margin: 1%;
-	text-align: center;
-	font-size: 60px;
+	padding: 4px;
+	text-align: left;
 	vertical-align: middle;
 	border-radius: 10px;
-	background-image: url('greybackground.png');
+  	background-image: linear-gradient(45deg, grey 25%, transparent 25%), linear-gradient(-45deg, grey 25%, transparent 25%), linear-gradient(45deg, transparent 75%, grey 75%), linear-gradient(-45deg, transparent 75%, grey 75%);
+  	background-size: 10px 10px;
+  	background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
 }
 
 button {
-	font-size: 30px;
-	padding: 2%;
+	padding: 1%;
+	margin: 1%;
 	border-color: grey;
 	min-width: 100px;
+	height: 60px;
 	display: inline-block;
 }
 
-#player1Total {
-	font-size: 30px;
-	margin: 10px;
-	padding: 10px;
+.infoArea {
+	font-size: 25px;
+	height: 50px;
 	display: inline-block;
+	margin:3px;
 }
 
 #FAQ {
@@ -68,14 +61,18 @@ button {
 	border-color: grey;
 	border-width: 2px;
 	border-radius: 10px;
-	padding: 2%;
-	margin: 2%;
+	padding: 3px;
+	margin: 5px;
 }
 
 h3 {
 	text-align:center;
 }
 
+h5 {
+	text-align: center;
+	text-decoration: underline;
+}
 h6 {
-	padding: 0 0 10px 0;
+	padding: 0 0 5px 0;
 }
